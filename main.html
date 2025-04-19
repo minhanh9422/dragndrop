@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day & Night Sort Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game-board {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .zone {
+      width: 30%;
+      min-height: 300px;
+      border: 2px dashed #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: white;
+    }
+    .zone h2 {
+      margin-top: 0;
+    }
+    .block {
+      width: 60px;
+      height: 60px;
+      margin: 10px auto;
+      border-radius: 8px;
+      cursor: grab;
+    }
+    .yellow { background-color: yellow; }
+    .gray { background-color: gray; }
+  </style>
+</head>
+<body>
+  <h1>🌞 Day & Night Sort Game 🌙</h1>
+  <p>Drag the yellow blocks to the Sun and the gray blocks to the Moon!</p>
+
+  <div class="game-board">
+    <div class="zone" id="sun">
+      <h2>☀️ Sun</h2>
+    </div>
+
+    <div class="zone" id="start">
+      <h2>Blocks</h2>
+      <!-- Blocks will be inserted here -->
+    </div>
+
+    <div class="zone" id="moon">
+      <h2>🌙 Moon</h2>
+    </div>
+  </div>
+
+  <script>
+    const startZone = document.getElementById('start');
+    const sunZone = document.getElementById('sun');
+    const moonZone = document.getElementById('moon');
+
+    const blocks = [
+      ...Array(5).fill('yellow'),
+      ...Array(5).fill('gray')
+    ].sort(() => 0.5 - Math.random());
+
+    blocks.forEach((color, i) => {
+      const block = document.createElement('div');
+      block.classList.add('block', color);
+      block.setAttribute('draggable', true);
+      block.setAttribute('data-color', color);
+      block.id = `block-${i}`;
+      startZone.appendChild(block);
+
+      block.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', block.id);
+      });
+    });
+
+    document.querySelectorAll('.zone').forEach(zone => {
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text/plain');
+        const block = document.getElementById(id);
+        if (zone !== startZone) {
+          zone.appendChild(block);
+          checkAnswer(block, zone.id);
+        }
+      });
+    });
+
+    function checkAnswer(block, zoneId) {
+      const color = block.getAttribute('data-color');
+      if ((color === 'yellow' && zoneId === 'sun') ||
+          (color === 'gray' && zoneId === 'moon')) {
+        alert('✅ Correct!');
+      } else {
+        alert('❌ Try again!');
+      }
+    }
+  </script>
+</body>
+</html>
